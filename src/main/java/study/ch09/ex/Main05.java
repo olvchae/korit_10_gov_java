@@ -1,4 +1,4 @@
 package study.ch09.ex;
 
-public class Main02 {
+public class Main05 {
 }
