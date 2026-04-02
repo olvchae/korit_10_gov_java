@@ -1,4 +1,8 @@
 package study.ch12;
 
-public class Dog {
+public class Dog extends Animal{
+    @Override
+    public void cat() {
+
+    }
 }

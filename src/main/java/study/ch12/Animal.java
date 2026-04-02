@@ -1,4 +1,7 @@
 package study.ch12;
 
-public class Animal {
+//추상클래스
+public abstract class Animal {
+    public abstract void cat();
 }
+
