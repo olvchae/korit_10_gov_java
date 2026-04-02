@@ -10,6 +10,7 @@ class Animal{
     //전체 생성자 (AllargumentsConstructor)
     public Animal (String name){ //자식에게서 받아오기 위해
         this.name = name;
+        showInfo();
     }
 
     public void eat() {
