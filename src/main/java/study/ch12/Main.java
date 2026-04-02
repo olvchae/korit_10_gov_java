@@ -1,5 +1,40 @@
 package study.ch12;
 
+abstract class AA{
+
+}
+
+class BB extends AA{
+
+}
+
+class CC extends BB{
+
+}
+
+class MM {
+    public static void main(String[] args) {
+//        AA a = new AA();  상속 불가능
+        BB b = new BB();
+        AA b2 = new BB();
+
+        //한 번만 쓸 임시로 쓸 클래스를 만들고 싶음
+        AA c = new AA(){  //AA객체가 아니라 이름 없는 클래스의 객체임
+
+        };
+        AA cc = new CC();
+        AA ccc = new BB(){  //BB를 상속받은 이름 없는 클래스의 객체
+
+        };
+        BB cccc = new BB(){
+
+        };
+        CC bbb = new CC(){
+
+        };
+    }
+}
+
 public class Main {
     public static void main(String[] args) {
         Animal animal = new Dog();  //upcasting
