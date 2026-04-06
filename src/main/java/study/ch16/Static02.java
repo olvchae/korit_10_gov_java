@@ -9,82 +9,94 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-
-class User{
+class User {
     private Long id;
     private String username;
     private String password;
 }
 
-class UserRepository{
+class UserRepository {
     private final User[] users;
     private Long lastCreatedId = 0l;
 
-    public UserRepository(){
-        users = new User[1000];
+    public UserRepository(User[] users) {
+        this.users = users;
     }
 
-    public boolean addUser(User user){
+    //의존성 주입 DI
+    public boolean addUser(User user) {  //배열을 의존
         boolean isSuccess = false;
-        for(int i = 0; i < users.length; i++){
-            if (users[i] == null){
+        for (int i = 0; i < users.length; i++) {
+            if (users[i] == null) {
                 user.setId(++lastCreatedId);
                 users[i] = user;
                 isSuccess = true;
                 break;
             }
-            if (!isSuccess){
-                System.out.println("사용자 추가 실패");
-                return isSuccess;
-            }
-            System.out.println("사용자 추가 성공");
-            System.out.println("추가된 사용자 정보:" + user);
         }
+        if (!isSuccess) {
+            System.out.println("사용자 추가 실패");
+            return isSuccess;
+        }
+        System.out.println("사용자 추가 성공");
+        System.out.println("추가된 사용자 정보: " + user);
         return isSuccess;
     }
 
-    public User findByUsername(String username){
-        for(User user : users){
-            if(user == null) continue;
-            if(user.getUsername().equals(username)){
+    public User findByUsername(String username) {
+        for (User user : users) {
+            if (user == null) continue;
+            if (user.getUsername().equals(username)) {
                 return user;
             }
         }
         return null;
     }
 
-    public void printUsers(){
+    public void printUsers() {
         System.out.println("사용자 전체 조회");
-        for(User user : users){
+        for (User user : users) {
             System.out.println(user);
         }
     }
 }
 
-class UserService{
-    public int signup(String username, String password){
-        // 성공: 200 실패: 400(중복 아이디), 500(공간부족)
-        int status = 200;
+class UserService {
+    private UserRepository userRepository;
 
-        UserRepository userRepository = new UserRepository();
+    public UserService(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
+
+    public int signup(String username, String password) {
+        // 성공: 200, 실패: 400(중복 아이디), 500(공간부족)
         User foundUser = userRepository.findByUsername(username);
-        if(foundUser != null){
+        if (foundUser != null) {
             return 400;
         }
 
         User newUser = new User(0l, username, password);
-//        boolean isSuccess = UserRepository.addUser(username);
-        userRepository.addUser(newUser);
-        return status;
+        boolean isSuccess = userRepository.addUser(newUser);
+        if (!isSuccess) {
+            return 500;
+        }
 
+        userRepository.printUsers();
+        return 200;
     }
 }
 
-class UserController{
-    public void postMapping(String username, String password){
-        UserService userService = new UserService();
+class UserController {
+    private UserService userService;
+
+    public UserController(UserService userService){
+        this.userService = userService;
+    }
+
+    public void postMapping(String username, String password) {
+
         int status = userService.signup(username, password);
-        switch (status){
+        switch (status) {
             case 200:
                 System.out.println("회원 등록 성공");
                 break;
@@ -93,7 +105,6 @@ class UserController{
                 break;
             case 500:
                 System.out.println("데이터를 더이상 추가할 수 없습니다.");
-                break;
         }
     }
 }
@@ -101,24 +112,29 @@ class UserController{
 public class Static02 {
     public static void main(String[] args) {
         String[] usernames = new String[500];
-        String[] password = new String[500];
-        for (int i = 0; i < 500; i++){
+        String[] passwords = new String[500];
+        for (int i = 0; i < 500; i++) {
             Random random = new Random();
             usernames[i] = "";
-            for(int j = 0; j < 10; j++){
+            for (int j = 0; j < 10; j++) {
                 int r = random.nextInt(26) + 97;
-                usernames[i] += (char)r;
+                usernames[i] += (char) r;
             }
             usernames[i] += "@gmail.com";
-            password[i] = UUID.randomUUID().toString().replaceAll("-", "");
+            passwords[i] = UUID.randomUUID().toString().replaceAll("-", "");
         }
 
         System.out.println(Arrays.toString(usernames));
-        System.out.println(Arrays.toString(password));
+        System.out.println(Arrays.toString(passwords));
 
-        UserController userController = new UserController();
-        for(int i = 0; i < 500; i++){
-            userController.postMapping(usernames[i], password[i]);
+        User[] users = new User[100];
+        UserRepository userRepository = new UserRepository((users));
+        UserService userService = new UserService(userRepository);
+
+        UserController userController = new UserController(userService);
+        for (int i = 0; i < 100; i++) {
+            userController.postMapping(usernames[i], passwords[i]);
         }
+
     }
 }
