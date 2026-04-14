@@ -1,4 +1,4 @@
-package ex2.dto;
+package ex3.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
