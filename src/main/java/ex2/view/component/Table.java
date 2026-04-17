@@ -1,10 +1,8 @@
 package ex2.view.component;
 
-import lombok.AllArgsConstructor;
-
 import java.util.*;
 
-@AllArgsConstructor
+
 public class Table {
     private List<String> columns;
     private List<List<String>> rows;
